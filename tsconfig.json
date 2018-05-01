@@ -4,6 +4,7 @@
         "strict": true,
         "esModuleInterop": true,
         "target": "es5",
+        "lib": ["es6"],
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
