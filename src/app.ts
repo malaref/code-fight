@@ -1,4 +1,5 @@
 import { createServer, Server } from "http";
+import { getAuthenticate, getDashboard, getIDE } from "./endpoints";
 import express from "express";
 import socketIo from "socket.io";
 import path from "path";
@@ -22,5 +23,10 @@ app.set("view engine", "pug");
 app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
+
+
+app.get("/authenticate", getAuthenticate);
+app.get("/dashboard", getDashboard);
+app.get("/ide", getIDE);
 
 export default app;
