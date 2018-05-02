@@ -1,13 +1,17 @@
 {
     "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "strictNullChecks": false,
         "module": "commonjs",
         "strict": true,
         "esModuleInterop": true,
         "target": "es5",
-        "lib": ["es6"],
+        "lib": ["es2015", "es6"],
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
+        "allowJs": true,
         "baseUrl": ".",
         "paths": {
             "*": [

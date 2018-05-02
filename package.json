@@ -16,7 +16,11 @@
   "dependencies": {
     "express": "^4.16.3",
     "pug": "^2.0.3",
-    "socket.io": "^2.1.0"
+    "socket.io": "^2.1.0",
+    "directory-tree": "^2.1.0",
+    "reflect-metadata": "^0.1.12",
+    "mysql2": "^1.5.3",
+    "typeorm": "^0.2.4"
   },
   "devDependencies": {
     "@types/errorhandler": "0.0.32",
@@ -24,11 +28,15 @@
     "@types/node": "^10.0.2",
     "@types/socket.io": "^1.4.33",
     "concurrently": "^3.5.1",
+    "directory-tree": "^2.1.0",
     "errorhandler": "^1.5.0",
+    "mysql2": "^1.5.3",
     "nodemon": "^1.17.3",
     "pug-lint": "^2.5.0",
+    "reflect-metadata": "^0.1.12",
     "ts-node": "^6.0.2",
     "tslint": "^5.9.1",
+    "typeorm": "^0.2.4",
     "typescript": "^2.8.3"
   },
   "scripts": {
