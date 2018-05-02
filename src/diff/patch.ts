@@ -8,8 +8,10 @@ export class Patch {
         const [text, result] = Patch.dmp.patch_apply(patch, fileText);
         return text;
     }
-    static createPatch (originalText: string, newText: string) {
-        return 0;
+    static createPatch (originalText: string, newText: string): string {
+        const patch = Patch.dmp.patch_make(originalText, newText);
+        const textPatch: string = Patch.dmp.patch_toText(patch);
+        return textPatch;
     }
 }
 
