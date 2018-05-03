@@ -7,13 +7,13 @@ block content
     {"id": "login-username", "name": "username", "type": "text", "label": "Username"},
     {"id": "login-password", "name": "password", "type": "password", "label": "Password"}
     ])
-    a.float-left(data-toggle="modal" data-dismiss="modal" href="#register-modal")
+    a.badge.badge-secondary(data-toggle="modal" data-dismiss="modal" href="#register-modal")
       | New user?
   +modal-form("register-modal", "Register", "/register", [
     {"id": "register-username", "name": "username", "type": "text", "label": "Username"},
     {"id": "register-password", "name": "password", "type": "password", "label": "Password"}
     ])
-    a.float-left(data-toggle="modal" data-dismiss="modal" href="#login-modal")
+    a.badge.badge-secondary(data-toggle="modal" data-dismiss="modal" href="#login-modal")
       | Already a user?
 
 

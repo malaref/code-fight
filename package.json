@@ -24,6 +24,7 @@
     "typeorm": "^0.2.4"
   },
   "devDependencies": {
+    "@types/ace": "0.0.38",
     "@types/body-parser": "^1.17.0",
     "@types/bootstrap": "^4.1.0",
     "@types/errorhandler": "0.0.32",
