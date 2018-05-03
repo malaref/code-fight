@@ -48,7 +48,7 @@ export class User {
         return await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
-            .orWhere("user.password = :tempPassword", {tempPassword: password})
+            .andWhere("user.password = :tempPassword", {tempPassword: password})
             .getOne();
     }
 
