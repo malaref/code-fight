@@ -1,8 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { Privilege } from "./Privilege";
-
-import fs = require("fs");
+import fs from "fs";
 import { Patch } from "../diff/patch";
 import { DB } from "../app";
 
@@ -44,19 +43,19 @@ export class Project {
      * @return bool the status of the operation
      */
     public async addUserToProject(ownerUsername: string, newUsername: string, newContributionLevel: string) {
-        const owner: User = await User.getUser(ownerUsername);
-        const newUser: User = await User.getUser(newUsername);
-        if (owner == undefined || newUsername == undefined) {
+        const owner: User | undefined = await User.getUser(ownerUsername);
+        const newUser: User | undefined = await User.getUser(newUsername);
+        if (owner == undefined || newUser == undefined) {
             return false;
         }
-        const ownerPrivilege: Privilege = await Privilege.getPrivilege(ownerUsername, this.id);
+        const ownerPrivilege: Privilege | undefined = await Privilege.getPrivilege(ownerUsername, this.id);
         if (ownerPrivilege == undefined) {
             return false;
         }
         if (Privilege.OWNER != ownerPrivilege.contributionLevel) {
             return false;
         }
-        const UserPrivilege: Privilege = await Privilege.getPrivilege(newUsername, this.id);
+        const UserPrivilege: Privilege | undefined = await Privilege.getPrivilege(newUsername, this.id);
         if (UserPrivilege == undefined) {
             const newUserPrivilege: Privilege = await new Privilege(newUser, this, newContributionLevel);
             await DB.getRepository(Privilege).save(newUserPrivilege);
@@ -89,12 +88,11 @@ export class Project {
     }
 
     public createProjectStructure() {
-        // TODO u must now which directory u are in to know how to navigate (in my code i was in the root)
-        const base_dir = "./projects/";
-        if (!fs.existsSync(base_dir)) {
-            fs.mkdirSync(base_dir);
+        // TODO u must know which directory u are in to know how to navigate (in my code i was in the root)
+        if (!fs.existsSync(Project.BASE_DIR)) {
+            fs.mkdirSync(Project.BASE_DIR);
         }
-        fs.mkdirSync(base_dir + this.id.toString(10));
+        fs.mkdirSync(Project.BASE_DIR + this.id.toString(10));
     }
 
     /*

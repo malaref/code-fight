@@ -23,6 +23,7 @@
     "mysql2": "^1.5.3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.4.1",
     "pug": "^2.0.3",
     "reflect-metadata": "^0.1.12",
     "socket.io": "^2.1.0",

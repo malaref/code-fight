@@ -15,7 +15,7 @@ export class User {
     password: string;
 
     @OneToMany(type => Privilege, privilege => privilege.user)
-    privileges: Privilege[];
+    privileges!: Privilege[];
 
     private constructor (username: string, email: string, password: string) {
         this.username = username;

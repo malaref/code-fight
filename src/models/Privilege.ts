@@ -12,38 +12,38 @@ export class Privilege {
     static CONTRIBUTOR: string = "CONTRIBUTION";
 
     @Column()
-    contributionLevel: string;
+    contributionLevel!: string;
 
     @PrimaryColumn()
-    userUsername: string;
+    userUsername!: string;
 
     @PrimaryColumn()
-    projectId: number;
+    projectId!: number;
 
     @ManyToOne(type => User, user => user.privileges)
-    user: User;
+    user!: User;
 
     @ManyToOne(type => Project, project => project.privileges)
-    project: Project;
+    project!: Project;
 
-    // TODO in edit remember ro modify the primary keys
     constructor(user: User, project: Project, contributionLevel: string) {
-        if (contributionLevel == Privilege.VIEWER || contributionLevel == Privilege.OWNER || contributionLevel == Privilege.CONTRIBUTOR) {
+        if (contributionLevel === Privilege.VIEWER || contributionLevel === Privilege.OWNER || contributionLevel === Privilege.CONTRIBUTOR) {
             this.contributionLevel = contributionLevel;
             this.user = user;
             this.project = project;
             this.userUsername = user.username;
             this.projectId = project.id;
+        } else {
+            throw new Error("Should never get here!");
         }
-        // TODO what the hell is happening here!!!
     }
 
     /*
      * @return the privilege if it exists else undefined
      */
-    static async getPrivilege (username: string, projectId: number) {
+    static async getPrivilege(username: string, projectId: number) {
         const repo = DB.getRepository(Privilege);
-        const privilege: Privilege = await repo
+        const privilege: Privilege | undefined = await repo
             .createQueryBuilder("privilege")
             .where("privilege.userUsername = :tempUsername", {tempUsername: username})
             .andWhere("privilege.projectId = :tempId" , {tempId: projectId})

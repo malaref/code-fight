@@ -4,13 +4,8 @@ import express from "express";
 import socketIo from "socket.io";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
-import passport, { Strategy } from "passport";
-import passportLocal from "passport-local";
-// TODO remove the require statements with import
-import morgan from "morgan";
-const cookieParser = require("cookie-parser")();
+import passport from "passport";
 import { urlencoded } from "body-parser";
-// const expressSession = require("express-session")({ secret: "keyboard cat", resave: false, saveUninitialized: false });
 import expressSession from "express-session";
 import { User } from "./models/User";
 
@@ -30,53 +25,22 @@ app.set("port", PORT);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
 
-app.use(
-  express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
-);
+app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
 
 app.use(urlencoded({ extended: false }));
-app.use(morgan("combined"));
-app.use(cookieParser);
-app.use(expressSession{ secret: "keyboard cat", resave: false, saveUninitialized: false }));
+app.use(expressSession({ secret: "this is a secret", saveUninitialized: false }));
 
 // Database initialization
 export let DB: Connection;
-createConnection().then( async connection => {
+createConnection().then(connection => {
     DB = connection;
     console.log("connected successfully");
 }).catch((err) => console.log(err));
 
-
-// passport setup
-const LocalStrategy = passportLocal.Strategy;
-const localStrategy: Strategy = new LocalStrategy ((username: string, password: string, done) => {
-    User.authenticate(username, password).then((user: User) => {
-        if (user != undefined) {
-            return done(null, user);
-        } else {
-            return done(undefined, false, {message: "Incorrect credential"});
-        }
-    }).catch((err) => {
-        console.error("Error authenticating the user", err);
-        return done(err);
-    });
-});
-
-passport.use(localStrategy);
-
-passport.serializeUser((user: User, done) => {
-    done(undefined, user.username);
-});
-
-passport.deserializeUser((username: string, done) => {
-    User.getUser(username).then((user: User) => {
-        done(undefined, user);
-    });
-});
-
+// Passport setup
+import "./config/passport";
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 // Routes
 app.get("/authenticate", authenticate);
