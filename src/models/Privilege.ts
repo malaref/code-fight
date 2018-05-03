@@ -27,14 +27,12 @@ export class Privilege {
     project!: Project;
 
     constructor(user: User, project: Project, contributionLevel: string) {
-        if (contributionLevel === Privilege.VIEWER || contributionLevel === Privilege.OWNER || contributionLevel === Privilege.CONTRIBUTOR) {
+        if (user != undefined && project != undefined && contributionLevel != undefined) {
             this.contributionLevel = contributionLevel;
             this.user = user;
             this.project = project;
             this.userUsername = user.username;
             this.projectId = project.id;
-        } else {
-            throw new Error("Should never get here!");
         }
     }
 

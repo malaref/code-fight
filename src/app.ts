@@ -34,7 +34,6 @@ app.use(expressSession({ secret: "this is a secret", saveUninitialized: false })
 export let DB: Connection;
 createConnection().then(connection => {
     DB = connection;
-    console.log("connected successfully");
 }).catch((err) => console.log(err));
 
 // Passport setup

@@ -14,13 +14,15 @@ export class Project {
     id!: number;
 
     @Column()
-    name: string;
+    name!: string;
 
     @OneToMany(type => Privilege, privilege => privilege.project)
     privileges!: Privilege[];
 
     constructor(name: string) {
-        this.name = name;
+        if (name  != undefined) {
+            this.name = name;
+        }
     }
 
     public addPrivilege (privilege: Privilege) {

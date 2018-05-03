@@ -6,36 +6,33 @@ import { DB } from "../app";
 @Entity()
 export class User {
     @PrimaryColumn({unique: true})
-    username: string;
-
-    @Column({unique: true})
-    email: string;
+    username!: string;
 
     @Column()
-    password: string;
+    password!: string;
 
     @OneToMany(type => Privilege, privilege => privilege.user)
     privileges!: Privilege[];
 
-    private constructor (username: string, email: string, password: string) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
+    private constructor (username: string, password: string) {
+        if (username != undefined && password != undefined) {
+            this.username = username;
+            this.password = password;
+        }
     }
 
     /*
      * @return bool true if the user is created successfully else false
      */
-    static async createNewUser (username: string, email: string, password: string) {
+    static async createNewUser (username: string, password: string) {
         const repo = DB.getRepository(User);
         let user = await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
-            .orWhere("user.email = :tempEmail", {tempEmail: email})
             .getOne();
         if (user == undefined) {
             // TODO hash the password
-            user = new User(username, email, password);
+            user = new User(username, password);
             await repo.save(user).catch((err) => {
                 console.error("User.internal error", err);
             });
@@ -51,7 +48,7 @@ export class User {
         return await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
-            .orWhere("user.password = :tempPassword", {tempEmail: password})
+            .orWhere("user.password = :tempPassword", {tempPassword: password})
             .getOne();
     }
 
