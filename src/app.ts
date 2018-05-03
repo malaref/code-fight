@@ -4,9 +4,14 @@ import express from "express";
 import socketIo from "socket.io";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
-import { urlencoded } from "body-parser";
 import passport, { Strategy } from "passport";
 import passportLocal from "passport-local";
+// TODO remove the require statements with import
+import morgan from "morgan";
+const cookieParser = require("cookie-parser")();
+import { urlencoded } from "body-parser";
+// const expressSession = require("express-session")({ secret: "keyboard cat", resave: false, saveUninitialized: false });
+import expressSession from "express-session";
 import { User } from "./models/User";
 
 const app = express();
@@ -29,30 +34,25 @@ app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
 
-app.use(urlencoded());
+app.use(urlencoded({ extended: false }));
+app.use(morgan("combined"));
+app.use(cookieParser);
+app.use(expressSession{ secret: "keyboard cat", resave: false, saveUninitialized: false }));
 
-app.get("/authenticate", authenticate);
-app.get("/dashboard", dashboard);
-app.get("/ide", ide);
-
-app.post("/login", login);
-app.post("/register", register);
-
-app.get("/", function(req, res) {
-    res.redirect("/dashboard");
-});
-
+// Database initialization
 export let DB: Connection;
 createConnection().then( async connection => {
     DB = connection;
     console.log("connected successfully");
 }).catch((err) => console.log(err));
 
+
+// passport setup
 const LocalStrategy = passportLocal.Strategy;
 const localStrategy: Strategy = new LocalStrategy ((username: string, password: string, done) => {
     User.authenticate(username, password).then((user: User) => {
         if (user != undefined) {
-            return done(undefined, user);
+            return done(null, user);
         } else {
             return done(undefined, false, {message: "Incorrect credential"});
         }
@@ -74,12 +74,20 @@ passport.deserializeUser((username: string, done) => {
     });
 });
 
-app.use(require("morgan")("combined"));
-app.use(require("cookie-parser")());
-app.use(require("body-parser").urlencoded({ extended: true }));
-app.use(require("express-session")({ secret: "keyboard cat", resave: false, saveUninitialized: false }));
-
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+// Routes
+app.get("/authenticate", authenticate);
+app.get("/dashboard", dashboard);
+app.get("/ide", ide);
+
+app.post("/login", login);
+app.post("/register", register);
+
+app.get("/", function(req, res) {
+    res.redirect("/dashboard");
+});
 
 export default app;
