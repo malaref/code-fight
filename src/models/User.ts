@@ -44,6 +44,18 @@ export class User {
     }
 
     /*
+     *@return user if the user exists else undefined
+     */
+    static async authenticate(username: string, password: string) {
+        const repo = DB.getRepository(User);
+        return await repo
+            .createQueryBuilder("user")
+            .where("user.username = :tempUsername", {tempUsername: username})
+            .orWhere("user.password = :tempPassword", {tempEmail: password})
+            .getOne();
+    }
+
+    /*
      * @return the User if he exists else undefined
      */
     static async getUser (username: string) {

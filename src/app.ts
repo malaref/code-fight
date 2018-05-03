@@ -5,6 +5,9 @@ import socketIo from "socket.io";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
 import { urlencoded } from "body-parser";
+import passport, { Strategy } from "passport";
+import passportLocal from "passport-local";
+import { User } from "./models/User";
 
 const app = express();
 
@@ -43,6 +46,40 @@ export let DB: Connection;
 createConnection().then( async connection => {
     DB = connection;
     console.log("connected successfully");
-}).catch((error) => console.log(error));
+}).catch((err) => console.log(err));
+
+const LocalStrategy = passportLocal.Strategy;
+const localStrategy: Strategy = new LocalStrategy ((username: string, password: string, done) => {
+    User.authenticate(username, password).then((user: User) => {
+        if (user != undefined) {
+            return done(undefined, user);
+        } else {
+            return done(undefined, false, {message: "Incorrect credential"});
+        }
+    }).catch((err) => {
+        console.error("Error authenticating the user", err);
+        return done(err);
+    });
+});
+
+passport.use(localStrategy);
+
+passport.serializeUser((user: User, done) => {
+    done(undefined, user.username);
+});
+
+passport.deserializeUser((username: string, done) => {
+    User.getUser(username).then((user: User) => {
+        done(undefined, user);
+    });
+});
+
+app.use(require("morgan")("combined"));
+app.use(require("cookie-parser")());
+app.use(require("body-parser").urlencoded({ extended: true }));
+app.use(require("express-session")({ secret: "keyboard cat", resave: false, saveUninitialized: false }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 export default app;
