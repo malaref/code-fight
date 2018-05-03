@@ -7,13 +7,13 @@ import { Request, Response, NextFunction } from "express";
 const LocalStrategy = passportLocal.Strategy;
 
 passport.serializeUser((user: User, done) => {
-  done(undefined, user.username);
+    done(undefined, user.username);
 });
 
 passport.deserializeUser((username: string, done) => {
-  User.getUser(username).then((user: User | undefined) => {
-      done(undefined, user);
-  });
+    User.getUser(username).then((user: User | undefined) => {
+        done(undefined, user);
+    });
 });
 
 passport.use(new LocalStrategy(
