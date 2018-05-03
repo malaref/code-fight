@@ -1,9 +1,10 @@
 import { createServer, Server } from "http";
-import { getAuthenticate, getDashboard, getIDE } from "./endpoints";
+import { authenticate, dashboard, ide, login, register } from "./endpoints";
 import express from "express";
 import socketIo from "socket.io";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
+import { urlencoded } from "body-parser";
 
 const app = express();
 
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 const io = socketIo();
 io.on("connect", (socket: socketIo.Socket) => {
-    console.log("Connected client on port %s.", PORT);
+    console.log("Client connected");
     socket.on("disconnect", () => {
         console.log("Client disconnected");
     });
@@ -25,10 +26,18 @@ app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
 
+app.use(urlencoded());
 
-app.get("/authenticate", getAuthenticate);
-app.get("/dashboard", getDashboard);
-app.get("/ide", getIDE);
+app.get("/authenticate", authenticate);
+app.get("/dashboard", dashboard);
+app.get("/ide", ide);
+
+app.post("/login", login);
+app.post("/register", register);
+
+app.get("/", function(req, res) {
+    res.redirect("/dashboard");
+});
 
 export let DB: Connection;
 createConnection().then( async connection => {

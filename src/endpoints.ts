@@ -1,20 +1,31 @@
 import { Request, Response } from "express";
 
-
-export let getAuthenticate = (req: Request, res: Response) => {
+export let authenticate = (req: Request, res: Response) => {
     res.render("pages/authenticate", {
         title: "Authenticate"
     });
 };
 
-export let getDashboard = (req: Request, res: Response) => {
+export let dashboard = (req: Request, res: Response) => {
     res.render("pages/dashboard", {
         title: "Dashboard"
     });
 };
 
-export let getIDE = (req: Request, res: Response) => {
+export let ide = (req: Request, res: Response) => {
     res.render("pages/ide", {
         title: "IDE"
     });
+};
+
+export let login = (req: Request, res: Response) => {
+    console.log(req.body.username);
+    console.log(req.body.password);
+    res.redirect("/");
+};
+
+export let register = (req: Request, res: Response) => {
+    console.log(req.body.username);
+    console.log(req.body.password);
+    res.redirect("/");
 };

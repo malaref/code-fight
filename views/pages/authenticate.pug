@@ -1,4 +1,21 @@
 extends ../layout
 
+include ../partials/modal-form
+
 block content
-  h1 Please authenticate!
+  +modal-form("login-modal", "Login", "/login", [
+    {"id": "login-username", "name": "username", "type": "text", "label": "Username"},
+    {"id": "login-password", "name": "password", "type": "password", "label": "Password"}
+    ])
+    a.float-left(data-toggle="modal" data-dismiss="modal" href="#register-modal")
+      | New user?
+  +modal-form("register-modal", "Register", "/register", [
+    {"id": "register-username", "name": "username", "type": "text", "label": "Username"},
+    {"id": "register-password", "name": "password", "type": "password", "label": "Password"}
+    ])
+    a.float-left(data-toggle="modal" data-dismiss="modal" href="#login-modal")
+      | Already a user?
+
+
+append body
+  script(src="js/authenticate.js")
