@@ -5,6 +5,7 @@ import fs from "fs";
 import JsDiff from "diff";
 
 import { DB } from "../app";
+import { exec } from "child_process";
 
 @Entity()
 export class Script {
@@ -90,7 +91,7 @@ export class Script {
     }
 
     public createScriptStructure() {
-        const helloWorld: string = "console.log('Hello '" + this.name + "')";
+        const helloWorld: string = "console.log(\"Hello " + this.name + "\")";
         const path: string = Script.BASE_DIR + this.id.toString(10);
         if (!fs.existsSync(Script.BASE_DIR)) {
             fs.mkdirSync(Script.BASE_DIR);
@@ -103,7 +104,22 @@ export class Script {
     }
 
     // TODO run script
-    public runScript(){
+    public runScript(inputStream: string) {
+        const path = Script.BASE_DIR + this.id.toString(10);
+        console.log("trying to run the code");
+        exec("echo " + inputStream + " | node " + path , (err, stdout, stderr) => {
+            if (err) {
+                console.error("there is error here", err);
+            }
+            console.log(stdout);
+            console.log(stderr);
+        });
+    }
 
+    /*
+     *@return the golden file of the project
+     */
+    public getScriptCode(): string {
+        return fs.readFileSync(Script.BASE_DIR + this.id.toString(10)).toString();
     }
 }

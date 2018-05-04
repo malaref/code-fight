@@ -104,7 +104,7 @@ export class User {
      *@return Script if he is allowed to access it else undefined
      *@comment in case u need a boolean instead of object just return (script==undefined)
      */
-    public async getUserScript (scriptId: number){
+    public async getUserScript (scriptId: number) {
         const query = DB.getRepository(Script).createQueryBuilder("script");
         const script: Script|undefined = await query
             .where("script.id IN " + query.subQuery()
