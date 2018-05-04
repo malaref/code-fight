@@ -41,5 +41,5 @@ dist/**/*
 # Ignore output from coverage report
 coverage
 
-#ignore the saved scripts files
+# Ignore the saved scripts files
 scripts
