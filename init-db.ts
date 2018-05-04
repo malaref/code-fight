@@ -1,8 +1,10 @@
-import { Privilege } from "./models/Privilege";
-import { Script } from "./models/Script";
-import { User } from "./models/User";
+import { createConnection } from "typeorm";
 
-setTimeout(async () => {
+const Privilege = require("./dist/models/Privilege").Privilege;
+const Script = require("./dist/models/Script").Script;
+const User = require("./dist/models/User").User;
+
+createConnection().then(async (connection) => {
     const user1 = await User.createNewUser("user1", "12345");
     const user2 = await User.createNewUser("user2", "12345");
     const user3 = await User.createNewUser("user3", "12345");
@@ -25,4 +27,4 @@ setTimeout(async () => {
 
     console.log("access of user1 and pro1", await user1.getUserScript(1));
     console.log("access of user1 and pro4", await user1.getUserScript(4));
-}, 10000);
+}).catch((err) => console.log(err));

@@ -2,6 +2,14 @@ extends ../layout
 
 include ../partials/navbar
 
+append head
+  link(
+    href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    rel="stylesheet"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+    crossorigin="anonymous"
+  )
+
 block content
   +navbar(
     [
@@ -10,3 +18,14 @@ block content
       {"id": "new-nav", "href": "/new", "label": "New Script"},
       {"id": "logout-nav", "href": "/logout", "label": "Logout"}
     ])
+  .list-group
+    each script in scripts
+      - url = "/script/" + script.id
+      a.list-group-item.list-group-item-action.flex-column.align-items-start(href=url)
+        .d-flex.w-100.justify-content-between
+          = script.name
+          small
+            form.form-horizontal(action="/script/delete" method="post")
+              input(type="hidden", name="id")
+              button.btn.badge.badge-danger(type="submit")
+                span.fa.fa-remove

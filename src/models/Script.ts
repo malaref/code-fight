@@ -8,7 +8,7 @@ import { exec } from "child_process";
 @Entity()
 export class Script {
 
-    private static BASE_DIR: string = "./scripts/";
+    private static BASE_DIR: string = "./dist/scripts/";
 
     @PrimaryGeneratedColumn()
     id!: number;
