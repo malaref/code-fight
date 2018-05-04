@@ -2,7 +2,8 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { Privilege } from "./Privilege";
 import fs from "fs";
-import { Patch } from "../diff/patch";
+import JsDiff from "diff";
+
 import { DB } from "../app";
 
 @Entity()
@@ -80,7 +81,7 @@ export class Project {
             return false;
         }
         const text: string = fs.readFileSync(path).toString();
-        const patchedText: string = Patch.applyPatch(patchAsTextPatch, text);
+        const patchedText: string = JsDiff.applyPatch(text, patchAsTextPatch);
         fs.writeFile(path, patchedText, (err) => {
             if (err) {
                 console.error("error writing the file", err);

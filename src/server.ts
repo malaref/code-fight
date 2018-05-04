@@ -1,6 +1,5 @@
 import socketIo from "socket.io";
 import errorHandler from "errorhandler";
-import deepEqual from "deep-equal";
 
 import app from "./app";
 
