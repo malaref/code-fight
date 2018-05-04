@@ -9,4 +9,14 @@ $(function() {
       enableSnippets: true,
       enableLiveAutocompletion: false
     });
+    const socket = io();
+    $("#message-form").submit(() => {
+      socket.emit("chat", $("#message-input").val());
+      $("#message-input").val("");
+      return false;
+    });
+    socket.on("chat", (message: string) => {
+      $("#messages").append($("<li class=\"list-group-item list-group-item-action w-100\">").text(message));
+      $("#messages").scrollTop($("#messages").prop("scrollHeight"));
+    });
   });
