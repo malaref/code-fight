@@ -1,8 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, getConnection, ManyToOne, PrimaryColumn } from "typeorm";
 import { User } from "./User";
 import { Script } from "./Script";
-import { DB } from "../app";
-
 
 @Entity()
 export class Privilege {
@@ -40,7 +38,7 @@ export class Privilege {
      * @return the privilege if it exists else undefined
      */
     static async getPrivilege(username: string, scriptId: number) {
-        const repo = DB.getRepository(Privilege);
+        const repo = getConnection().getRepository(Privilege);
         const privilege: Privilege | undefined = await repo
             .createQueryBuilder("privilege")
             .where("privilege.userUsername = :tempUsername", {tempUsername: username})

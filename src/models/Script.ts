@@ -1,10 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, getConnection, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { Privilege } from "./Privilege";
 import fs from "fs";
 import JsDiff from "diff";
-
-import { DB } from "../app";
 import { exec } from "child_process";
 
 @Entity()
@@ -38,7 +36,7 @@ export class Script {
      * @return Script if it exists else undefined
      */
     static async getScript (scriptId: number) {
-        const scriptRepo = DB.getRepository(Script);
+        const scriptRepo = getConnection().getRepository(Script);
         return await scriptRepo.findOne(scriptId);
     }
 
@@ -62,12 +60,12 @@ export class Script {
         const UserPrivilege: Privilege | undefined = await Privilege.getPrivilege(newUsername, this.id);
         if (UserPrivilege == undefined) {
             const newUserPrivilege: Privilege = await new Privilege(newUser, this, newContributionLevel);
-            await DB.getRepository(Privilege).save(newUserPrivilege);
+            await getConnection().getRepository(Privilege).save(newUserPrivilege);
             await this.addPrivilege(newUserPrivilege);
             await newUser.addPrivilege(newUserPrivilege);
         } else {
             UserPrivilege.contributionLevel = newContributionLevel;
-            await DB.getRepository(Privilege).save(UserPrivilege);
+            await getConnection().getRepository(Privilege).save(UserPrivilege);
         }
         return true;
     }

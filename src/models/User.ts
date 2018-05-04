@@ -1,7 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, getConnection, OneToMany, PrimaryColumn } from "typeorm";
 import { Script } from "./Script";
 import { Privilege } from "./Privilege";
-import { DB } from "../app";
 
 @Entity()
 export class User {
@@ -25,7 +24,7 @@ export class User {
      * @return User if created successfully else undefined
      */
     static async createNewUser (username: string, password: string) {
-        const repo = DB.getRepository(User);
+        const repo = getConnection().getRepository(User);
         let user = await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
@@ -43,7 +42,7 @@ export class User {
      *@return user if the user exists else undefined
      */
     static async authenticate(username: string, password: string) {
-        const repo = DB.getRepository(User);
+        const repo = getConnection().getRepository(User);
         return await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
@@ -55,7 +54,7 @@ export class User {
      * @return the User if he exists else undefined
      */
     static async getUser (username: string) {
-        const repo = DB.getRepository(User);
+        const repo = getConnection().getRepository(User);
         return await repo.findOne(username);
     }
 
@@ -64,10 +63,10 @@ export class User {
      */
     public async createNewScript (scriptName: string) {
         // TODO don't make the user make the script with the same name
-        const scriptsRepo = DB.getRepository(Script);
+        const scriptsRepo = getConnection().getRepository(Script);
         const script = new Script(scriptName);
         await scriptsRepo.save(script);
-        const privilegeRepo = DB.getRepository(Privilege);
+        const privilegeRepo = getConnection().getRepository(Privilege);
         const privilege = new Privilege(this, script, Privilege.OWNER);
         this.addPrivilege(privilege);
         script.addPrivilege(privilege);
@@ -89,7 +88,7 @@ export class User {
      *@return list of Scripts that user has access to, and empty list if none exists
      */
     public async getUserScripts() {
-        const query = DB.getRepository(Script).createQueryBuilder("script");
+        const query = getConnection().getRepository(Script).createQueryBuilder("script");
         const scripts: Script[] = await query
             .where("script.id IN " + query.subQuery()
                 .select("privilege.scriptId")
@@ -105,7 +104,7 @@ export class User {
      *@comment in case u need a boolean instead of object just return (script==undefined)
      */
     public async getUserScript (scriptId: number) {
-        const query = DB.getRepository(Script).createQueryBuilder("script");
+        const query = getConnection().getRepository(Script).createQueryBuilder("script");
         const script: Script|undefined = await query
             .where("script.id IN " + query.subQuery()
                 .select("privilege.scriptId")
