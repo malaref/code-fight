@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { User } from "./User";
-import { Project } from "./Project";
+import { Script } from "./Script";
 import { DB } from "../app";
 
 
@@ -18,33 +18,33 @@ export class Privilege {
     userUsername!: string;
 
     @PrimaryColumn()
-    projectId!: number;
+    scriptId!: number;
 
     @ManyToOne(type => User, user => user.privileges)
     user!: User;
 
-    @ManyToOne(type => Project, project => project.privileges)
-    project!: Project;
+    @ManyToOne(type => Script, script => script.privileges)
+    script!: Script;
 
-    constructor(user: User, project: Project, contributionLevel: string) {
-        if (user != undefined && project != undefined && contributionLevel != undefined) {
+    constructor(user: User, script: Script, contributionLevel: string) {
+        if (user != undefined && script != undefined && contributionLevel != undefined) {
             this.contributionLevel = contributionLevel;
             this.user = user;
-            this.project = project;
+            this.script = script;
             this.userUsername = user.username;
-            this.projectId = project.id;
+            this.scriptId = script.id;
         }
     }
 
     /*
      * @return the privilege if it exists else undefined
      */
-    static async getPrivilege(username: string, projectId: number) {
+    static async getPrivilege(username: string, scriptId: number) {
         const repo = DB.getRepository(Privilege);
         const privilege: Privilege | undefined = await repo
             .createQueryBuilder("privilege")
             .where("privilege.userUsername = :tempUsername", {tempUsername: username})
-            .andWhere("privilege.projectId = :tempId" , {tempId: projectId})
+            .andWhere("privilege.scriptId = :tempId" , {tempId: scriptId})
             .getOne();
         return privilege;
     }

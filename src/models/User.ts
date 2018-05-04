@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-import { Project } from "./Project";
+import { Script } from "./Script";
 import { Privilege } from "./Privilege";
 import { DB } from "../app";
 
@@ -22,7 +22,7 @@ export class User {
     }
 
     /*
-     * @return bool true if the user is created successfully else false
+     * @return User if created successfully else undefined
      */
     static async createNewUser (username: string, password: string) {
         const repo = DB.getRepository(User);
@@ -31,7 +31,6 @@ export class User {
             .where("user.username = :tempUsername", {tempUsername: username})
             .getOne();
         if (user == undefined) {
-            // TODO hash the password
             user = new User(username, password);
             await repo.save(user).catch((err) => {
                 console.error("User.internal error", err);
@@ -61,22 +60,22 @@ export class User {
     }
 
     /*
-     * @return Project
+     * @return Script
      */
-    public async createNewProject (projectName: string) {
-        // TODO don't make the user make the project with the same name
-        const projectsRepo = DB.getRepository(Project);
-        const project = new Project(projectName);
-        await projectsRepo.save(project);
+    public async createNewScript (scriptName: string) {
+        // TODO don't make the user make the script with the same name
+        const scriptsRepo = DB.getRepository(Script);
+        const script = new Script(scriptName);
+        await scriptsRepo.save(script);
         const privilegeRepo = DB.getRepository(Privilege);
-        const privilege = new Privilege(this, project, Privilege.OWNER);
+        const privilege = new Privilege(this, script, Privilege.OWNER);
         this.addPrivilege(privilege);
-        project.addPrivilege(privilege);
+        script.addPrivilege(privilege);
         privilegeRepo.save(privilege).catch((err) => {
             console.error("error saving the privilege", err);
         });
-        project.createProjectStructure();
-        return project;
+        script.createScriptStructure();
+        return script;
     }
 
     public addPrivilege (privilege: Privilege) {
@@ -85,22 +84,37 @@ export class User {
         }
         this.privileges.push( privilege );
     }
+
+    /*
+     *@return list of Scripts that user has access to, and empty list if none exists
+     */
+    public async getUserScripts() {
+        const query = DB.getRepository(Script).createQueryBuilder("script");
+        const scripts: Script[] = await query
+            .where("script.id IN " + query.subQuery()
+                .select("privilege.scriptId")
+                .from(Privilege, "privilege")
+                .where("userUsername = :username", {username: this.username})
+                .getQuery())
+            .getMany();
+        return scripts;
+    }
+
+    /*
+     *@return Script if he is allowed to access it else undefined
+     *@comment in case u need a boolean instead of object just return (script==undefined)
+     */
+    public async getUserScript (scriptId: number){
+        const query = DB.getRepository(Script).createQueryBuilder("script");
+        const script: Script|undefined = await query
+            .where("script.id IN " + query.subQuery()
+                .select("privilege.scriptId")
+                .from(Privilege, "privilege")
+                .where("userUsername = :username", {username: this.username})
+                .andWhere("scriptId = :id", {id: scriptId})
+                .getQuery())
+            .getOne();
+        return script;
+    }
 }
 
-/*
-exec("dir" , (err, stdout, stderr)=>{
-            if (err != null){
-                console.error("there is error here", err);
-            }
-            console.log(stdout);
-            console.log(stderr);
-        });
-
-        exec("mkdir .\\projects\\test" , (err, stdout, stderr)=>{
-            if (err != null){
-                console.error("there is error here", err);
-            }
-            console.log(stdout);
-            console.log(stderr);
-        });
- */
