@@ -1,6 +1,7 @@
 import { Column, Entity, getConnection, OneToMany, PrimaryColumn } from "typeorm";
 import { Script } from "./Script";
 import { Privilege } from "./Privilege";
+import bcrypt from "bcryptjs";
 
 @Entity()
 export class User {
@@ -24,13 +25,14 @@ export class User {
      * @return User if created successfully else undefined
      */
     static async createNewUser (username: string, password: string) {
+        const hashedPassword: string = bcrypt.hashSync(password, process.env.BCRYPT_SALT);
         const repo = getConnection().getRepository(User);
         let user = await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
             .getOne();
         if (user == undefined) {
-            user = new User(username, password);
+            user = new User(username, hashedPassword);
             await repo.save(user).catch((err) => {
                 console.error("User.internal error", err);
             });
@@ -43,11 +45,19 @@ export class User {
      */
     static async authenticate(username: string, password: string) {
         const repo = getConnection().getRepository(User);
-        return await repo
+        const user: User|undefined = await repo
             .createQueryBuilder("user")
             .where("user.username = :tempUsername", {tempUsername: username})
-            .andWhere("user.password = :tempPassword", {tempPassword: password})
             .getOne();
+        if (user == undefined) {
+            return user;
+        } else {
+            if (bcrypt.compareSync(password, user.password)) {
+                return user;
+            } else {
+                return undefined;
+            }
+        }
     }
 
     /*
