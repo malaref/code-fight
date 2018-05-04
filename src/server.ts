@@ -1,5 +1,6 @@
 import socketIo from "socket.io";
 import errorHandler from "errorhandler";
+import deepEqual from "deep-equal";
 
 import app from "./app";
 
@@ -18,6 +19,7 @@ const server = app.listen(app.get("port"), () => {
     console.log("  Press CTRL-C to stop\n");
 });
 
+// Sockets
 const io = socketIo(server);
 io.on("connect", (socket: socketIo.Socket) => {
     // TODO Authenticate the connection
@@ -25,6 +27,10 @@ io.on("connect", (socket: socketIo.Socket) => {
     socket.on("chat", (message) => {
         console.log("Message received: %s", message);
         io.emit("chat", message);
+    });
+    socket.on("change", (patch: string) => {
+        console.log(patch);
+        io.emit("change", patch);
     });
     socket.on("disconnect", () => {
         console.log("Client disconnected");
