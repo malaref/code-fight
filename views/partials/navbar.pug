@@ -1,0 +1,20 @@
+mixin navbar(left_items, right_items)
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+    a.navbar-brand(href="/") Code Fight
+    button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbar")
+      span.navbar-toggler-icon
+    .collapse.navbar-collapse#navbar
+      ul.navbar-nav.mr-auto
+        each item in left_items
+          - var item_id = item["id"]
+          - var item_href = item["href"]
+          - var item_label = item["label"]
+          li.nav-item
+            a.nav-link(id= item_id href= item_href)= item_label
+      ul.navbar-nav.navbar-right
+        each item in right_items
+          - var item_id = item["id"]
+          - var item_href = item["href"]
+          - var item_label = item["label"]
+          li.nav-item
+            a.nav-link(id= item_id href= item_href)= item_label

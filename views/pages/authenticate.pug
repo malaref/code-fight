@@ -1,8 +1,15 @@
 extends ../layout
 
+include ../partials/navbar
 include ../partials/modal-form
 
 block content
+  +navbar(
+    [
+    ],[
+      {"id": "register-nav", "href": "#register-modal", "label": "Register"},
+      {"id": "login-nav", "href": "#login-modal", "label": "Login"}
+    ])
   +modal-form("login-modal", "Login", "/login", [
     {"id": "login-username", "name": "username", "type": "text", "label": "Username"},
     {"id": "login-password", "name": "password", "type": "password", "label": "Password"}

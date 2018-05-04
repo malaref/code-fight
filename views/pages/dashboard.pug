@@ -1,4 +1,12 @@
 extends ../layout
 
+include ../partials/navbar
+
 block content
-  h1 Welcome to your dashboard!
+  +navbar(
+    [
+      {"id": "dashboard-nav", "href": "/dashboard", "label": "Dashboard"}
+    ],[
+      {"id": "new-nav", "href": "/new", "label": "New Script"},
+      {"id": "logout-nav", "href": "/logout", "label": "Logout"}
+    ])
