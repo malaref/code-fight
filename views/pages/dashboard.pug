@@ -1,6 +1,7 @@
 extends ../layout
 
 include ../partials/navbar
+include ../partials/modal-form
 
 append head
   link(
@@ -18,6 +19,9 @@ block content
       {"id": "new-nav", "href": "/new", "label": "New Script"},
       {"id": "logout-nav", "href": "/logout", "label": "Logout"}
     ])
+  +modal-form("new-script-modal", "New Script", "/script/new", [
+    {"id": "new-script-name", "name": "name", "type": "text", "label": "Script Name"}
+    ])
   .list-group
     each script in scripts
       - url = "/script/" + script.id
@@ -25,7 +29,10 @@ block content
         .d-flex.w-100.justify-content-between
           = script.name
           small
-            form.form-horizontal(action="/script/delete" method="post")
-              input(type="hidden", name="id")
+            - deleteUrl = "/script/" + script.id + "/delete"
+            form.form-horizontal(action=deleteUrl method="post")
               button.btn.badge.badge-danger(type="submit")
                 span.fa.fa-remove
+
+append body
+  script(src="/js/dashboard.js")

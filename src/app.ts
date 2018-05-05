@@ -1,4 +1,4 @@
-import { authenticate, dashboard, ide, register } from "./endpoints";
+import { authenticate, register, logout, dashboard, newScript, getScript, deleteScript } from "./endpoints";
 import express from "express";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
@@ -32,15 +32,20 @@ app.use(passport.session());
 
 // Routes
 app.get("/authenticate", authenticate);
+app.post("/register", register);
 app.post("/login",
   passport.authenticate("local", { successRedirect: "/",
                                    failureRedirect: "/authenticate" }));
-app.post("/register", register);
+app.post("/logout", logout);
+app.get("/logout", logout);
 
 app.get("/", function(req, res) {
     res.redirect("/dashboard");
 });
 app.get("/dashboard", dashboard);
-app.get("/ide", ide);
+
+app.post("/script/new", newScript);
+app.get("/script/:id", getScript);
+app.post("/script/:id/delete", deleteScript);
 
 export default app;

@@ -10,6 +10,8 @@ block content
       {"id": "new-nav", "href": "/new", "label": "New Script"},
       {"id": "logout-nav", "href": "/logout", "label": "Logout"}
     ])
+  #script-id(hidden)
+    = script_id
   .row(style="flex:1;")
     .col-3
       ul.border.list-group.h-75#messages(style="overflow: hidden;")
@@ -39,4 +41,4 @@ append body
     integrity="sha256-GohE5pijQCRc5q81JQLFszd3AyiRqci/3Le8DIv+9bE="
     crossorigin="anonymous"
   )
-  script(src="js/ide.js")
+  script(src="/js/editor.js")
