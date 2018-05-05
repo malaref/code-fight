@@ -17,7 +17,7 @@ $(function() {
     const script_id = $("#script-id").text();
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
-    editor.setTheme("ace/theme/dracula");
+    editor.setTheme("ace/theme/ambiance");
     editor.session.setMode("ace/mode/python");
     editor.setFontSize("20px");
     editor.setOptions({
@@ -28,7 +28,7 @@ $(function() {
 
     const socket = io();
     socket.on("connect", function() {
-        socket.emit("room", script_id);
+        socket.emit("script_id", script_id);
      });
 
     // Chat
@@ -44,16 +44,19 @@ $(function() {
 
     // Change
     let original = editor.getValue();
+    let waiting = false;
     let updating = false;
     let syncing = false;
     let turn = true;
+    let myPatch: string;
     const sync = () => {
         syncing = true;
         turn = true;
         while (updating && turn);
-        if (original != editor.getValue()) {
-            socket.emit("change",
-                        JsDiff.createPatch("", original, editor.getValue(), "", ""));
+        if (!waiting && original != editor.getValue()) {
+            myPatch = JsDiff.createPatch(script_id, original, editor.getValue(), "", "");
+            socket.emit("change", myPatch);
+            waiting = true;
         }
         syncing = false;
         setTimeout(sync, 1000);
@@ -67,6 +70,9 @@ $(function() {
         editor.setValue(original, 1);
         editor.moveCursorToPosition(cursorPosition);
         updating = false;
+        if (patch == myPatch) {
+            waiting = false;
+        }
     });
     sync();
 });

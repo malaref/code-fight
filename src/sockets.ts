@@ -15,6 +15,7 @@ export default function sockets(server: Server) {
             io.to((<any>socket).script_id).emit("chat", message);
         });
         socket.on("change", (patch: string) => {
+            console.log(patch);
             Script.getScript((<any>socket).script_id)
                 .then((script) => {
                     if (script != undefined) {
