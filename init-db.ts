@@ -4,7 +4,7 @@ const User = require("./dist/models/User").User;
 import { Connection, createConnection } from "typeorm";
 
 export let DB: Connection;
-createConnection().then(async connection => {
+createConnection().then(async (connection) => {
     DB = connection;
     console.log("connected successfully");
     const user1 = await User.createNewUser("user1", "12345");

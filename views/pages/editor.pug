@@ -10,6 +10,8 @@ block content
       {"id": "new-nav", "href": "/new", "label": "New Script"},
       {"id": "logout-nav", "href": "/logout", "label": "Logout"}
     ])
+  #script-id(hidden)
+    = script_id
   .row(style="flex:1;")
     .col-3
       ul.border.list-group.h-75#messages(style="overflow: hidden;")
@@ -17,6 +19,7 @@ block content
         input.form-control.w-100#message-input(type="text")
     .col-9
       #editor(style="position: absolute; top: 0; right: 0; bottom: 0;left: 0;")
+        = script_code
 
 append body
   script(
@@ -39,4 +42,4 @@ append body
     integrity="sha256-GohE5pijQCRc5q81JQLFszd3AyiRqci/3Le8DIv+9bE="
     crossorigin="anonymous"
   )
-  script(src="js/ide.js")
+  script(src="/js/editor.js")

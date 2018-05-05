@@ -2,8 +2,8 @@ import { Column, Entity, getConnection, PrimaryGeneratedColumn, Repository } fro
 import { User } from "./User";
 import { Privilege } from "./Privilege";
 import fs from "fs";
-import JsDiff from "diff";
 import { execSync } from "child_process";
+import { applyPatch } from "diff";
 
 @Entity()
 export class Script {
@@ -67,7 +67,7 @@ export class Script {
             return false;
         }
         const text: string = fs.readFileSync(path).toString();
-        const patchedText: string = JsDiff.applyPatch(text, patch);
+        const patchedText: string = applyPatch(text, patch);
         fs.writeFile(path, patchedText, (err) => {
             if (err) {
                 console.error("error writing the file", err);

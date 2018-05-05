@@ -1,6 +1,6 @@
-import socketIo from "socket.io";
 import errorHandler from "errorhandler";
 
+import sockets from "./sockets";
 import app from "./app";
 
 
@@ -19,21 +19,6 @@ const server = app.listen(app.get("port"), () => {
 });
 
 // Sockets
-const io = socketIo(server);
-io.on("connect", (socket: socketIo.Socket) => {
-    // TODO Authenticate the connection
-    console.log("Client connected");
-    socket.on("chat", (message) => {
-        console.log("Message received: %s", message);
-        io.emit("chat", message);
-    });
-    socket.on("change", (patch: string) => {
-        console.log(patch);
-        io.emit("change", patch);
-    });
-    socket.on("disconnect", () => {
-        console.log("Client disconnected");
-    });
-});
+sockets(server);
 
 export default server;
