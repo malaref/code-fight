@@ -1,14 +1,14 @@
-import { Column, Entity, getConnection, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, getConnection, PrimaryGeneratedColumn, Repository } from "typeorm";
 import { User } from "./User";
 import { Privilege } from "./Privilege";
 import fs from "fs";
 import JsDiff from "diff";
-import { exec } from "child_process";
+import { execSync } from "child_process";
 
 @Entity()
 export class Script {
 
-    private static BASE_DIR: string = "./scripts/";
+    private static BASE_DIR: string = "./dist/scripts/";
 
     @PrimaryGeneratedColumn()
     id!: number;
@@ -16,20 +16,10 @@ export class Script {
     @Column()
     name!: string;
 
-    @OneToMany(type => Privilege, privilege => privilege.script)
-    privileges!: Privilege[];
-
     constructor(name: string) {
         if (name  != undefined) {
             this.name = name;
         }
-    }
-
-    public addPrivilege (privilege: Privilege) {
-        if (this.privileges == undefined) {
-            this.privileges = [];
-        }
-        this.privileges.push(privilege);
     }
 
     /*
@@ -61,8 +51,6 @@ export class Script {
         if (UserPrivilege == undefined) {
             const newUserPrivilege: Privilege = await new Privilege(newUser, this, newContributionLevel);
             await getConnection().getRepository(Privilege).save(newUserPrivilege);
-            await this.addPrivilege(newUserPrivilege);
-            await newUser.addPrivilege(newUserPrivilege);
         } else {
             UserPrivilege.contributionLevel = newContributionLevel;
             await getConnection().getRepository(Privilege).save(UserPrivilege);
@@ -74,7 +62,7 @@ export class Script {
      *@return boolean the status of the operation
      */
     public async applyPatch (patch: string) {
-        const path: string = Script.BASE_DIR + this.id.toString(10);
+        const path: string = Script.BASE_DIR + this.id.toString();
         if (!fs.existsSync(path)) {
             return false;
         }
@@ -90,7 +78,7 @@ export class Script {
 
     public createScriptStructure() {
         const helloWorld: string = "console.log(\"Hello " + this.name + "\")";
-        const path: string = Script.BASE_DIR + this.id.toString(10);
+        const path: string = Script.BASE_DIR + this.id.toString();
         if (!fs.existsSync(Script.BASE_DIR)) {
             fs.mkdirSync(Script.BASE_DIR);
         }
@@ -101,23 +89,39 @@ export class Script {
         });
     }
 
-    // TODO run script
-    public runScript(inputStream: string) {
-        const path = Script.BASE_DIR + this.id.toString(10);
-        console.log("trying to run the code");
-        exec("echo " + inputStream + " | node " + path , (err, stdout, stderr) => {
-            if (err) {
-                console.error("there is error here", err);
-            }
-            console.log(stdout);
-            console.log(stderr);
-        });
+    /*
+     *@return the stdout in a string if running successfully else undefined
+     *@params DO NOT use "" as an input use " " if there is no input
+     */
+    public runScript(inputStream: string): string|undefined {
+        const path = Script.BASE_DIR + this.id.toString();
+        if (fs.existsSync(path)) {
+            console.log("trying to run the code");
+            const result: string = execSync("node " + path, {input: inputStream}).toString();
+            return result;
+        }
     }
 
     /*
      *@return the golden file of the project
      */
     public getScriptCode(): string {
-        return fs.readFileSync(Script.BASE_DIR + this.id.toString(10)).toString();
+        return fs.readFileSync(Script.BASE_DIR + this.id.toString()).toString();
+    }
+
+    public deleteScript() {
+        fs.unlink(Script.BASE_DIR + this.id.toString(), function (err) {
+            if (err)
+                console.error("can't delete file");
+        });
+        const scriptRepo: Repository<Script> = getConnection().getRepository(Script);
+        scriptRepo.createQueryBuilder("script")
+            .delete()
+            .from("script")
+            .where("script.id = :id", {id: this.id})
+            .execute()
+            .catch((err) => {
+                console.error("can't delete from script table", err);
+            });
     }
 }

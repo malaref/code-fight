@@ -1,4 +1,4 @@
-import { Column, Entity, getConnection, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Connection, Entity, getConnection, PrimaryColumn, Repository } from "typeorm";
 import { Script } from "./Script";
 import { Privilege } from "./Privilege";
 import bcrypt from "bcryptjs";
@@ -10,9 +10,6 @@ export class User {
 
     @Column()
     password!: string;
-
-    @OneToMany(type => Privilege, privilege => privilege.user)
-    privileges!: Privilege[];
 
     private constructor (username: string, password: string) {
         if (username != undefined && password != undefined) {
@@ -78,20 +75,11 @@ export class User {
         await scriptsRepo.save(script);
         const privilegeRepo = getConnection().getRepository(Privilege);
         const privilege = new Privilege(this, script, Privilege.OWNER);
-        this.addPrivilege(privilege);
-        script.addPrivilege(privilege);
         privilegeRepo.save(privilege).catch((err) => {
             console.error("error saving the privilege", err);
         });
         script.createScriptStructure();
         return script;
-    }
-
-    public addPrivilege (privilege: Privilege) {
-        if (this.privileges == undefined) {
-            this.privileges = [];
-        }
-        this.privileges.push( privilege );
     }
 
     /*
@@ -124,6 +112,40 @@ export class User {
                 .getQuery())
             .getOne();
         return script;
+    }
+
+    /*
+     *@return boolean true if the script is deleted successfully else false
+     */
+    public async deleteScript(scriptId: number) {
+        const connection: Connection = getConnection();
+        const privilegeRepo: Repository<Privilege> = connection.getRepository(Privilege);
+        const privilege: Privilege|undefined = await privilegeRepo
+            .createQueryBuilder("privilege")
+            .where("privilege.userUsername = :username", {username: this.username})
+            .andWhere("privilege.scriptId = :id", {id: scriptId})
+            .andWhere("privilege.contributionLevel = :level", {level: Privilege.OWNER})
+            .getOne();
+        if (privilege == undefined) {
+            return false;
+        } else {
+            const scriptId = privilege.scriptId;
+            privilegeRepo.createQueryBuilder("privilege")
+                .delete()
+                .from("privilege")
+                .where("privilege.scriptId = :id", {id: scriptId})
+                .execute()
+                .catch((err) => {
+                    console.error("can't delete from privilege table", err);
+                });
+            const script: Script| undefined = await Script.getScript(scriptId);
+            if (script) {
+                await script.deleteScript();
+            } else {
+                console.error("should delete this script");
+            }
+            return true;
+        }
     }
 }
 

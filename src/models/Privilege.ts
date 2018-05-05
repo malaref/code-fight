@@ -18,17 +18,9 @@ export class Privilege {
     @PrimaryColumn()
     scriptId!: number;
 
-    @ManyToOne(type => User, user => user.privileges)
-    user!: User;
-
-    @ManyToOne(type => Script, script => script.privileges)
-    script!: Script;
-
     constructor(user: User, script: Script, contributionLevel: string) {
         if (user != undefined && script != undefined && contributionLevel != undefined) {
             this.contributionLevel = contributionLevel;
-            this.user = user;
-            this.script = script;
             this.userUsername = user.username;
             this.scriptId = script.id;
         }
