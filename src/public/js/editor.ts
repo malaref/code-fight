@@ -28,11 +28,10 @@ $(function() {
     });
 
     // Change
-    let original = "";
+    let original = editor.getValue();
     let updating = false;
     let syncing = false;
     let turn = true;
-    editor.setValue(original);
     const sync = () => {
         syncing = true;
         turn = true;

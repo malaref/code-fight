@@ -58,7 +58,8 @@ export async function getScript(req: Request, res: Response) {
         } else {
             res.render("pages/editor", {
                 title: "Editor - " + script.name,
-                script_id: script.id
+                script_id: script.id,
+                script_code: script.getScriptCode()
             });
         }
     }
