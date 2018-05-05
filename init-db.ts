@@ -6,7 +6,7 @@ import { Connection, createConnection } from "typeorm";
 export let DB: Connection;
 createConnection().then(async (connection) => {
     DB = connection;
-    console.log("connected successfully");
+    console.log("Connected successfully");
     const user1 = await User.createNewUser("user1", "12345");
     const user2 = await User.createNewUser("user2", "123456");
     const user3 = await User.createNewUser("user3", "1234567");

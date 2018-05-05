@@ -4,6 +4,16 @@ $(function() {
         $("#new-script-modal").modal("show");
     });
 
+    $("#share-button").click((e) => {
+        e.preventDefault();
+        $("#share-modal").modal("show");
+    });
+
+    $("#run-button").click((e) => {
+        e.preventDefault();
+        $("#run-modal").modal("show");
+    });
+
     const script_id = $("#script-id").text();
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
