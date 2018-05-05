@@ -7,7 +7,7 @@ export class Privilege {
 
     static OWNER: string = "OWNER";
     static VIEWER: string = "VIEWER";
-    static CONTRIBUTOR: string = "CONTRIBUTION";
+    static CONTRIBUTOR: string = "CONTRIBUTOR";
 
     @Column()
     contributionLevel!: string;

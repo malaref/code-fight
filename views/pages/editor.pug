@@ -17,6 +17,9 @@ block content
   +modal-form("share-script", "Share Script", "/script/share", [
     {"id": "share-script-username", "name": "username", "type": "text", "label": "Username"}
     ])
+    select.form-control(name="contributionLevel")
+      each contributionLevel in contributionLevels
+        option= contributionLevel
   +modal-form("run-script", "Run Script", "/script/run", [
     {"id": "run-script-stdin", "name": "stdin", "type": "text", "label": "Run Script"}
     ])

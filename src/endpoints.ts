@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "./models/User";
+import { Privilege } from "./models/Privilege";
 
 export function authenticate (req: Request, res: Response) {
     if (req.user != undefined) {
@@ -59,7 +60,8 @@ export async function getScript(req: Request, res: Response) {
             res.render("pages/editor", {
                 title: "Editor - " + script.name,
                 script_id: script.id,
-                script_code: script.getScriptCode()
+                script_code: script.getScriptCode(),
+                contributionLevels: [Privilege.VIEWER, Privilege.CONTRIBUTOR]
             });
         }
     }
@@ -80,5 +82,15 @@ export async function runScript(req: Request, res: Response) {
     } else {
         const script = await req.user.getUserScript(req.params.id);
         res.send(script.runScript(req.body.stdin));
+    }
+}
+
+export async function shareScript(req: Request, res: Response) {
+    if (req.user == undefined) {
+        res.sendStatus(401);
+    } else {
+        const script = await req.user.getUserScript(req.params.id);
+        const success = await script.addUserToScript(req.user.username, req.body.username, req.body.contributionLevel);
+        res.send(success ? "Successfully shared with " +  req.body.username : "Could not share with " +  req.body.username);
     }
 }

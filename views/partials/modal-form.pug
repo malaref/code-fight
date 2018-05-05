@@ -5,8 +5,6 @@ mixin modal-form(id, title, url, fields)
       .modal-content
         .modal-header
           h5.modal-title= title
-          if block
-            block
         - var form_id = id + "-form"
         form.form-horizontal(id=form_id action=url method="post")
           .modal-body
@@ -19,6 +17,8 @@ mixin modal-form(id, title, url, fields)
                 label.control-label(for= field_id)= field_label
                 input.form-control(id= field_id type= field_type name= field_name)
           .modal-footer
+            if block
+              block
             button.btn.btn-default(type="reset")
               | Reset
             button.btn.btn-primary(type="submit")
