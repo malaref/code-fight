@@ -23,7 +23,7 @@ block content
   +modal-form("run-script", "Run Script", "/script/run", [
     {"id": "run-script-stdin", "name": "stdin", "type": "text", "label": "Run Script"}
     ])
-  #script-id(hidden)
+  #script-id(hidden read-only=read_only)
     = script_id
   #alert-container
   .row.m-0(style="flex:1;")

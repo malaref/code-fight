@@ -46,6 +46,7 @@ $(function() {
         });
     });
 
+    // Ace
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
     editor.setTheme("ace/theme/ambiance");
@@ -56,6 +57,7 @@ $(function() {
         enableSnippets: true,
         enableLiveAutocompletion: false
     });
+    editor.setReadOnly($("#script-id").is("[read-only]"));
 
     const socket = io();
     socket.on("connect", function() {

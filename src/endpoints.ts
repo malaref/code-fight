@@ -54,6 +54,7 @@ export async function getScript(req: Request, res: Response) {
         res.sendStatus(401);
     } else {
         const script = await req.user.getUserScript(req.params.id);
+        const contributionLevel = (await req.user.getUserPrivilege(req.params.id)).contributionLevel;
         if (script == undefined) {
             res.sendStatus(401);
         } else {
@@ -61,7 +62,8 @@ export async function getScript(req: Request, res: Response) {
                 title: "Editor - " + script.name,
                 script_id: script.id,
                 script_code: script.getScriptCode(),
-                contributionLevels: [Privilege.VIEWER, Privilege.CONTRIBUTOR]
+                contributionLevels: [Privilege.VIEWER, Privilege.CONTRIBUTOR],
+                read_only: contributionLevel != Privilege.OWNER && contributionLevel != Privilege.CONTRIBUTOR
             });
         }
     }
