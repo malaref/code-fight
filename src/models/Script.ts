@@ -75,7 +75,8 @@ export class Script {
     }
 
     /*
-     *@return the stdout in a string if running successfully else undefined
+     *@return the stdout in a string if running successfully
+     * y else undefined
      *@params DO NOT use "" as an input use " " if there is no input
      */
     public runScript(inputStream: string): string|undefined {

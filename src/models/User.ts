@@ -30,7 +30,7 @@ export class User {
             .getOne();
         if (user == undefined) {
             user = new User(username, hashedPassword);
-            await repo.save(user).catch((err) => {
+            repo.save(user).catch((err) => {
                 console.error("User.internal error", err);
             });
         }
@@ -69,7 +69,6 @@ export class User {
      * @return Script
      */
     public async createNewScript (scriptName: string) {
-        // TODO don't make the user make the script with the same name
         const scriptsRepo = getConnection().getRepository(Script);
         const script = new Script(scriptName);
         await scriptsRepo.save(script);
@@ -128,7 +127,6 @@ export class User {
         if (privilege == undefined) {
             return false;
         } else {
-            const scriptId = privilege.scriptId;
             privilegeRepo.createQueryBuilder("privilege")
                 .delete()
                 .from("privilege")
@@ -139,12 +137,31 @@ export class User {
                 });
             const script: Script| undefined = await Script.getScript(scriptId);
             if (script) {
-                await script.deleteScript();
+                script.deleteScript();
             } else {
                 console.error("can't delete this script");
             }
             return true;
         }
     }
+    /*
+     *@return privilege if exists else undefined
+     */
+    public async getUserPrivilege(scriptId: number) {
+        return await getConnection()
+            .getRepository(Privilege)
+            .createQueryBuilder("privilege")
+            .where("privilege.scriptId = :id",
+                {id : scriptId})
+            .andWhere("privilege.userUsername = :userName",
+                {userName: this.username});
+    }
+
+    public static async getAllUsers() {
+        const connection: Connection = getConnection();
+        return await connection.getRepository(User).find();
+    }
+
+
 }
 
