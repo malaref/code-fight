@@ -1,12 +1,14 @@
 mixin modal-form(id, title, url, fields)
-  .modal.fade(id=id)
+  - var modal_id = id + "-modal"
+  .modal.fade(id=modal_id)
     .modal-dialog.modal-dialog-centered
       .modal-content
         .modal-header
           h5.modal-title= title
           if block
             block
-        form.form-horizontal(action=url method="post")
+        - var form_id = id + "-form"
+        form.form-horizontal(id=form_id action=url method="post")
           .modal-body
             each field in fields
               - var field_id = field["id"]

@@ -1,8 +1,41 @@
 $(function() {
     const script_id = $("#script-id").text();
+
+    $("#new-nav").click((e) => {
+        e.preventDefault();
+        $("#new-script-modal").modal("show");
+    });
+
+    $("#share-button").click((e) => {
+        e.preventDefault();
+        $("#share-script-modal").modal("show");
+    });
+
+    $("#run-button").click((e) => {
+        e.preventDefault();
+        $("#run-script-modal").modal("show");
+    });
+
+    $("#run-script-form").submit((e) => {
+        e.preventDefault();
+        $("#run-script-modal").modal("hide");
+        $.ajax({
+            type: "POST",
+            url: "/script/" + script_id + "/run",
+            data: $("#run-script-form").serialize(),
+            success: function(data) {
+                $("#alert-container").empty();
+                const alert_div = $("<div class=\"alert alert-dismissible alert-primary\">");
+                alert_div.text(data);
+                alert_div.prepend($("<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>"));
+                $("#alert-container").append(alert_div);
+            }
+        });
+    });
+
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
-    editor.setTheme("ace/theme/dracula");
+    editor.setTheme("ace/theme/ambiance");
     editor.session.setMode("ace/mode/python");
     editor.setFontSize("20px");
     editor.setOptions({
@@ -13,7 +46,7 @@ $(function() {
 
     const socket = io();
     socket.on("connect", function() {
-        socket.emit("room", script_id);
+        socket.emit("script_id", script_id);
      });
 
     // Chat
@@ -29,16 +62,19 @@ $(function() {
 
     // Change
     let original = editor.getValue();
+    let waiting = false;
     let updating = false;
     let syncing = false;
     let turn = true;
+    let myPatch: string;
     const sync = () => {
         syncing = true;
         turn = true;
         while (updating && turn);
-        if (original != editor.getValue()) {
-            socket.emit("change",
-                        JsDiff.createPatch("", original, editor.getValue(), "", ""));
+        if (!waiting && original != editor.getValue()) {
+            myPatch = JsDiff.createPatch(script_id, original, editor.getValue(), "", "");
+            socket.emit("change", myPatch);
+            waiting = true;
         }
         syncing = false;
         setTimeout(sync, 1000);
@@ -52,6 +88,9 @@ $(function() {
         editor.setValue(original, 1);
         editor.moveCursorToPosition(cursorPosition);
         updating = false;
+        if (patch == myPatch) {
+            waiting = false;
+        }
     });
     sync();
 });

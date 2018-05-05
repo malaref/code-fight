@@ -1,4 +1,4 @@
-import { authenticate, register, logout, dashboard, newScript, getScript, deleteScript } from "./endpoints";
+import { authenticate, register, logout, dashboard, newScript, getScript, deleteScript, runScript } from "./endpoints";
 import express from "express";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
@@ -23,7 +23,6 @@ app.use(expressSession({ secret: "this is a secret", resave: true, saveUninitial
 export let DB: Connection;
 createConnection().then(connection => {
     DB = connection;
-    console.log("connected successfully");
 }).catch((err) => console.log(err));
 
 // Passport setup
@@ -48,5 +47,6 @@ app.get("/dashboard", dashboard);
 app.post("/script/new", newScript);
 app.get("/script/:id", getScript);
 app.post("/script/:id/delete", deleteScript);
+app.post("/script/:id/run", runScript);
 
 export default app;

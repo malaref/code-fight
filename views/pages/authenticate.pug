@@ -10,13 +10,13 @@ block content
       {"id": "register-nav", "href": "/register", "label": "Register"},
       {"id": "login-nav", "href": "/login", "label": "Login"}
     ])
-  +modal-form("login-modal", "Login", "/login", [
+  +modal-form("login", "Login", "/login", [
     {"id": "login-username", "name": "username", "type": "text", "label": "Username"},
     {"id": "login-password", "name": "password", "type": "password", "label": "Password"}
     ])
     a.badge.badge-secondary(data-toggle="modal" data-dismiss="modal" href="#register-modal")
       | New user?
-  +modal-form("register-modal", "Register", "/register", [
+  +modal-form("register", "Register", "/register", [
     {"id": "register-username", "name": "username", "type": "text", "label": "Username"},
     {"id": "register-password", "name": "password", "type": "password", "label": "Password"}
     ])

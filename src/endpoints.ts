@@ -69,8 +69,16 @@ export function deleteScript(req: Request, res: Response) {
     if (req.user == undefined) {
         res.sendStatus(401);
     } else {
-        // TODO uncomment this line
-        // req.user.deleteScript(req.params.id);
+        req.user.deleteScript(req.params.id);
         res.redirect("/dashboard");
+    }
+}
+
+export async function runScript(req: Request, res: Response) {
+    if (req.user == undefined) {
+        res.sendStatus(401);
+    } else {
+        const script = await req.user.getUserScript(req.params.id);
+        res.send(script.runScript(req.body.stdin));
     }
 }
