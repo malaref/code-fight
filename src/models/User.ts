@@ -154,7 +154,7 @@ export class User {
             .where("privilege.scriptId = :id",
                 {id : scriptId})
             .andWhere("privilege.userUsername = :userName",
-                {userName: this.username});
+                {userName: this.username}).getOne();
     }
 
     public static async getAllUsers() {
