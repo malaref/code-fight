@@ -21,7 +21,7 @@ block content
       each contributionLevel in contributionLevels
         option= contributionLevel
   +modal-form("run-script", "Run Script", "/script/run", [
-    {"id": "run-script-stdin", "name": "stdin", "type": "text", "label": "Run Script"}
+    {"id": "run-script-stdin", "name": "stdin", "type": "text", "label": "STDIN"}
     ])
   #script-id(hidden read-only=read_only)
     = script_id
