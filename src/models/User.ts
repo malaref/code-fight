@@ -78,7 +78,6 @@ export class User {
         privilegeRepo.save(privilege).catch((err) => {
             console.error("error saving the privilege", err);
         });
-        script.createScriptStructure();
         return script;
     }
 
@@ -142,7 +141,7 @@ export class User {
             if (script) {
                 await script.deleteScript();
             } else {
-                console.error("should delete this script");
+                console.error("can't delete this script");
             }
             return true;
         }

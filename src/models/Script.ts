@@ -7,8 +7,7 @@ import { applyPatch } from "diff";
 
 @Entity()
 export class Script {
-
-    private static BASE_DIR: string = "./dist/scripts/";
+    private static HELLO_WORLD: string = "console.log(\"Hello world!\")\n";
 
     @PrimaryGeneratedColumn()
     id!: number;
@@ -16,9 +15,13 @@ export class Script {
     @Column()
     name!: string;
 
+    @Column({type: "text"})
+    code!: string;
+
     constructor(name: string) {
-        if (name  != undefined) {
+        if (name != undefined) {
             this.name = name;
+            this.code = Script.HELLO_WORLD;
         }
     }
 
@@ -62,31 +65,13 @@ export class Script {
      *@return boolean the status of the operation
      */
     public async applyPatch (patch: string) {
-        const path: string = Script.BASE_DIR + this.id.toString();
-        if (!fs.existsSync(path)) {
-            return false;
-        }
-        const text: string = fs.readFileSync(path).toString();
+        const text: string = this.code;
         const patchedText: string = applyPatch(text, patch);
-        fs.writeFile(path, patchedText, (err) => {
-            if (err) {
-                console.error("error writing the file", err);
-            }
+        this.code = patchedText;
+        await getConnection().getRepository(Script).save(this).catch((err) => {
+            console.error("can't apply patch ", err);
         });
         return true;
-    }
-
-    public createScriptStructure() {
-        const helloWorld: string = "console.log(\"Hello " + this.name + "\")";
-        const path: string = Script.BASE_DIR + this.id.toString();
-        if (!fs.existsSync(Script.BASE_DIR)) {
-            fs.mkdirSync(Script.BASE_DIR);
-        }
-        fs.writeFile(path, helloWorld, (err) => {
-            if (err) {
-                console.error("error writing the file", err);
-            }
-        });
     }
 
     /*
@@ -94,26 +79,31 @@ export class Script {
      *@params DO NOT use "" as an input use " " if there is no input
      */
     public runScript(inputStream: string): string|undefined {
-        const path = Script.BASE_DIR + this.id.toString();
-        if (fs.existsSync(path)) {
-            console.log("trying to run the code");
-            const result: string = execSync("node " + path, {input: inputStream}).toString();
-            return result;
+        if (inputStream == "") {
+            inputStream = " ";
         }
+        if (this.code == undefined) {
+            console.error("something bad is happening in running");
+        }
+        const fileName: string = this.id.toString() + ".js";
+        fs.writeFileSync(fileName, this.code);
+        const command: string = "node " + fileName;
+        const result: string = execSync(command , {
+            input: inputStream,
+            timeout: 5000
+        }).toString();
+        fs.unlinkSync(fileName);
+        return result;
     }
 
     /*
      *@return the golden file of the project
      */
     public getScriptCode(): string {
-        return fs.readFileSync(Script.BASE_DIR + this.id.toString()).toString();
+        return this.code;
     }
 
     public deleteScript() {
-        fs.unlink(Script.BASE_DIR + this.id.toString(), function (err) {
-            if (err)
-                console.error("can't delete file");
-        });
         const scriptRepo: Repository<Script> = getConnection().getRepository(Script);
         scriptRepo.createQueryBuilder("script")
             .delete()
