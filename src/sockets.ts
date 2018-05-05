@@ -6,17 +6,15 @@ export default function sockets(server: Server) {
     const io = socketIo(server);
     io.on("connect", (socket: socketIo.Socket) => {
         // TODO Authenticate the connection
-        console.log("Client connected");
+        socket.on("room", (room) => {
+            socket.join(room);
+            (<any>socket).room = room;
+        });
         socket.on("chat", (message) => {
-            console.log("Message received: %s", message);
-            io.emit("chat", message);
+            io.to((<any>socket).room).emit("chat", message);
         });
         socket.on("change", (patch: string) => {
-            console.log(patch);
-            io.emit("change", patch);
-        });
-        socket.on("disconnect", () => {
-            console.log("Client disconnected");
+            io.to((<any>socket).room).emit("change", patch);
         });
     });
 }

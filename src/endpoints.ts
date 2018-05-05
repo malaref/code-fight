@@ -41,7 +41,7 @@ export function logout(req: Request, res: Response) {
 
 export function newScript(req: Request, res: Response) {
     if (req.user == undefined) {
-        res.status(401);
+        res.sendStatus(401);
     } else {
         req.user.createNewScript(req.body.name);
         res.redirect("/dashboard");
@@ -50,15 +50,15 @@ export function newScript(req: Request, res: Response) {
 
 export async function getScript(req: Request, res: Response) {
     if (req.user == undefined) {
-        res.status(401);
+        res.sendStatus(401);
     } else {
         const script = await req.user.getUserScript(req.params.id);
         if (script == undefined) {
-            res.status(401);
+            res.sendStatus(401);
         } else {
             res.render("pages/editor", {
                 title: "Editor - " + script.name,
-                id: script.name
+                script_id: script.id
             });
         }
     }
@@ -66,7 +66,7 @@ export async function getScript(req: Request, res: Response) {
 
 export function deleteScript(req: Request, res: Response) {
     if (req.user == undefined) {
-        res.status(401);
+        res.sendStatus(401);
     } else {
         // TODO uncomment this line
         // req.user.deleteScript(req.params.id);

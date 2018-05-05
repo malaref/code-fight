@@ -1,4 +1,5 @@
 $(function() {
+    const script_id = $("#script-id").text();
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
     editor.setTheme("ace/theme/dracula");
@@ -11,6 +12,9 @@ $(function() {
     });
 
     const socket = io();
+    socket.on("connect", function() {
+        socket.emit("room", script_id);
+     });
 
     // Chat
     $("#message-form").submit(() => {
