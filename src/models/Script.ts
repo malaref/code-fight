@@ -2,7 +2,7 @@ import { Column, Entity, getConnection, OneToMany, PrimaryGeneratedColumn } from
 import { User } from "./User";
 import { Privilege } from "./Privilege";
 import fs from "fs";
-import JsDiff from "diff";
+import { applyPatch } from "diff";
 import { exec } from "child_process";
 
 @Entity()
@@ -79,7 +79,7 @@ export class Script {
             return false;
         }
         const text: string = fs.readFileSync(path).toString();
-        const patchedText: string = JsDiff.applyPatch(text, patch);
+        const patchedText: string = applyPatch(text, patch);
         fs.writeFile(path, patchedText, (err) => {
             if (err) {
                 console.error("error writing the file", err);

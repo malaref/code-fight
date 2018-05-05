@@ -1,20 +1,27 @@
 import socketIo from "socket.io";
 import { Server } from "http";
+import { Script } from "./models/Script";
 
 
 export default function sockets(server: Server) {
     const io = socketIo(server);
     io.on("connect", (socket: socketIo.Socket) => {
         // TODO Authenticate the connection
-        socket.on("room", (room) => {
-            socket.join(room);
-            (<any>socket).room = room;
+        socket.on("script_id", (script_id) => {
+            socket.join(script_id);
+            (<any>socket).script_id = script_id;
         });
         socket.on("chat", (message) => {
-            io.to((<any>socket).room).emit("chat", message);
+            io.to((<any>socket).script_id).emit("chat", message);
         });
         socket.on("change", (patch: string) => {
-            io.to((<any>socket).room).emit("change", patch);
+            Script.getScript((<any>socket).script_id)
+                .then((script) => {
+                    if (script != undefined) {
+                        script.applyPatch(patch).catch((err) => console.log(err));
+                    }
+                }).catch((err) => console.log(err));
+            io.to((<any>socket).script_id).emit("change", patch);
         });
     });
 }
