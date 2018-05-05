@@ -1,6 +1,7 @@
 extends ../layout
 
 include ../partials/navbar
+include ../partials/modal-form
 
 block content
   +navbar(
@@ -9,6 +10,9 @@ block content
     ],[
       {"id": "new-nav", "href": "/new", "label": "New Script"},
       {"id": "logout-nav", "href": "/logout", "label": "Logout"}
+    ])
+  +modal-form("new-script-modal", "New Script", "/script/new", [
+    {"id": "new-script-name", "name": "name", "type": "text", "label": "Script Name"}
     ])
   #script-id(hidden)
     = script_id

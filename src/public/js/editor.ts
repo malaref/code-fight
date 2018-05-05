@@ -1,4 +1,9 @@
 $(function() {
+    $("#new-nav").click((e) => {
+        e.preventDefault();
+        $("#new-script-modal").modal("show");
+    });
+
     const script_id = $("#script-id").text();
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
