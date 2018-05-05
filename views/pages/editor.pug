@@ -11,18 +11,19 @@ block content
       {"id": "new-nav", "href": "/new", "label": "New Script"},
       {"id": "logout-nav", "href": "/logout", "label": "Logout"}
     ])
-  +modal-form("new-script-modal", "New Script", "/script/new", [
+  +modal-form("new-script", "New Script", "/script/new", [
     {"id": "new-script-name", "name": "name", "type": "text", "label": "Script Name"}
     ])
-  +modal-form("share-script-modal", "Share Script", "/script/share", [
+  +modal-form("share-script", "Share Script", "/script/share", [
     {"id": "share-script-username", "name": "username", "type": "text", "label": "Username"}
     ])
-  +modal-form("run-script-modal", "Run Script", "/script/run", [
+  +modal-form("run-script", "Run Script", "/script/run", [
     {"id": "run-script-stdin", "name": "stdin", "type": "text", "label": "Run Script"}
     ])
   #script-id(hidden)
     = script_id
-  .row(style="flex:1;")
+  #alert-container
+  .row.m-0(style="flex:1;")
     .col-3.p-0
       .btn-toolbar.w-100.p-0.m-0
         .btn-group.w-100.p-0.m-0
@@ -31,7 +32,7 @@ block content
       ul.border.list-group.h-75#messages(style="overflow: hidden;")
       form#message-form
         input.form-control.w-100#message-input(type="text")
-    .col-9
+    .col-9.p-0
       #editor(style="position: absolute; top: 0; right: 0; bottom: 0;left: 0;")
         = script_code
 

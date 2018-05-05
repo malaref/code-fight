@@ -1,4 +1,6 @@
 $(function() {
+    const script_id = $("#script-id").text();
+
     $("#new-nav").click((e) => {
         e.preventDefault();
         $("#new-script-modal").modal("show");
@@ -6,15 +8,31 @@ $(function() {
 
     $("#share-button").click((e) => {
         e.preventDefault();
-        $("#share-modal").modal("show");
+        $("#share-script-modal").modal("show");
     });
 
     $("#run-button").click((e) => {
         e.preventDefault();
-        $("#run-modal").modal("show");
+        $("#run-script-modal").modal("show");
     });
 
-    const script_id = $("#script-id").text();
+    $("#run-script-form").submit((e) => {
+        e.preventDefault();
+        $("#run-script-modal").modal("hide");
+        $.ajax({
+            type: "POST",
+            url: "/script/" + script_id + "/run",
+            data: $("#run-script-form").serialize(),
+            success: function(data) {
+                $("#alert-container").empty();
+                const alert_div = $("<div class=\"alert alert-dismissible alert-primary\">");
+                alert_div.text(data);
+                alert_div.prepend($("<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>"));
+                $("#alert-container").append(alert_div);
+            }
+        });
+    });
+
     ace.require("ace/ext/language_tools");
     const editor = ace.edit("editor");
     editor.setTheme("ace/theme/ambiance");
