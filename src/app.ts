@@ -21,7 +21,7 @@ app.use(expressSession({ secret: "this is a secret", resave: true, saveUninitial
 
 // Database initialization
 export let DB: Connection;
-createConnection().then(async connection => {
+createConnection().then(connection => {
     DB = connection;
     console.log("connected successfully");
 }).catch((err) => console.log(err));
