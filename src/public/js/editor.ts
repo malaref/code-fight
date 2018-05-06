@@ -4,8 +4,10 @@ $(function() {
     function showMessage(data: any, error: any) {
         $("#alert-container").empty();
         const alert_div = $("<div class=\"alert " + (error ? "alert-danger" : "alert-dismissible alert-primary") + "\">");
-        alert_div.text(data);
-        alert_div.prepend($("<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>"));
+        const pre_div = $("<pre class=\"m-0\">");
+        pre_div.text(data);
+        alert_div.append($("<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>"));
+        alert_div.append(pre_div);
         $("#alert-container").append(alert_div);
     }
 
@@ -75,7 +77,7 @@ $(function() {
      });
      socket.on("disconnect", function() {
         disconnected = true;
-        showError("You are disconnected. Please check your connection and reload the page \n Any modifications you make offline will not take effect!");
+        showError("You are disconnected. Please check your connection and reload the page. \n Any modifications you make offline will not take effect!");
         editor.setReadOnly(true);
      });
 
