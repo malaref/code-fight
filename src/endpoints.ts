@@ -96,3 +96,19 @@ export async function shareScript(req: Request, res: Response) {
         res.send(success ? "Successfully shared with " +  req.body.username : "Could not share with " +  req.body.username);
     }
 }
+
+export async function getUsers(req: Request, res: Response) {
+    if (req.user == undefined) {
+        res.sendStatus(401);
+    } else {
+        const usernames: String[] = [];
+        const users = await User.getAllUsers();
+        for (let i = 0; i < users.length; i++) {
+            const username = users[i].username;
+            if (username.includes(req.body.query)) {
+                usernames.push(username);
+            }
+        }
+        res.send(usernames);
+    }
+}

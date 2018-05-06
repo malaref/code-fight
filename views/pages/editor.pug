@@ -3,6 +3,13 @@ extends ../layout
 include ../partials/navbar
 include ../partials/modal-form
 
+append head
+  link(
+    rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-autocomplete/1.0.7/jquery.auto-complete.css"
+    integrity="sha256-bX+rnnNrWmSrL9BjREvIc3tU9uClWcKmoEFJ2VKnUBc="
+    crossorigin="anonymous"
+  )
+
 block content
   +navbar(
     [
@@ -58,6 +65,11 @@ append body
   script(
     src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/3.5.0/diff.js"
     integrity="sha256-GohE5pijQCRc5q81JQLFszd3AyiRqci/3Le8DIv+9bE="
+    crossorigin="anonymous"
+  )
+  script(
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-autocomplete/1.0.7/jquery.auto-complete.js"
+    integrity="sha256-K3qK8ynOxhJVloLac0CTWwr7iFKVDZF4Gd2yEsiAZYA="
     crossorigin="anonymous"
   )
   script(src="/js/editor.js")

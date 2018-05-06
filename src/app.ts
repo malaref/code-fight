@@ -1,4 +1,4 @@
-import { authenticate, register, logout, dashboard, newScript, getScript, deleteScript, runScript, shareScript } from "./endpoints";
+import { authenticate, register, logout, dashboard, newScript, getScript, deleteScript, runScript, shareScript, getUsers } from "./endpoints";
 import express from "express";
 import path from "path";
 import { Connection, createConnection } from "typeorm";
@@ -49,5 +49,7 @@ app.get("/script/:id", getScript);
 app.post("/script/:id/delete", deleteScript);
 app.post("/script/:id/run", runScript);
 app.post("/script/:id/share", shareScript);
+
+app.post("/users", getUsers);
 
 export default app;

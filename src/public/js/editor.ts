@@ -27,6 +27,16 @@ $(function() {
     $("#share-button").click((e) => {
         e.preventDefault();
         $("#share-script-modal").modal("show");
+        (<any>$("#share-script-username")).autoComplete({
+            source: function(term: any, response: any) {
+                $.ajax({
+                    type: "POST",
+                    url: "/users",
+                    data: {query: term},
+                    success: function(data) { response(data); }
+                });
+            }
+        });
     });
 
     $("#run-button").click((e) => {
