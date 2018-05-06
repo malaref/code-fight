@@ -1,12 +1,20 @@
 $(function() {
     const script_id = $("#script-id").text();
 
-    function showAlert(data: any) {
+    function showMessage(data: any, error: any) {
         $("#alert-container").empty();
-        const alert_div = $("<div class=\"alert alert-dismissible alert-primary\">");
+        const alert_div = $("<div class=\"alert " + (error ? "alert-danger" : "alert-dismissible alert-primary") + "\">");
         alert_div.text(data);
         alert_div.prepend($("<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>"));
         $("#alert-container").append(alert_div);
+    }
+
+    function showAlert(data: any) {
+        showMessage(data, false);
+    }
+
+    function showError(data: any) {
+        showMessage(data, true);
     }
 
     $("#new-nav").click((e) => {
@@ -59,9 +67,16 @@ $(function() {
     });
     editor.setReadOnly($("#script-id").is("[read-only]"));
 
-    const socket = io();
+    // Sockets
+    const socket = io({reconnection: false});
+    let disconnected = false;
     socket.on("connect", function() {
         socket.emit("script_id", script_id);
+     });
+     socket.on("disconnect", function() {
+        disconnected = true;
+        showError("You are disconnected. Please check your connection and reload the page \n Any modifications you make offline will not take effect!");
+        editor.setReadOnly(true);
      });
 
     // Chat
@@ -88,6 +103,9 @@ $(function() {
         while (updating && turn);
         if (!waiting && original != editor.getValue()) {
             myPatch = JsDiff.createPatch(script_id, original, editor.getValue(), "", "");
+            if (disconnected) {
+                return;
+            }
             socket.emit("change", myPatch);
             waiting = true;
         }
